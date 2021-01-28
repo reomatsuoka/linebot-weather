@@ -25,7 +25,8 @@ SECRET_KEY = 't!+p6j)98@wsi&m$km*q&(d4!-z5vm)gj-olg6h)j*3#16@mm2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+# 本番ではドメインを'*'の部分に入れる(セキュリティー上)
 
 
 # Application definition
@@ -127,4 +128,7 @@ except ImportError:
 
 if not DEBUG:
     import django_heroku
+    import os
+    CHANNEL_ACCESS_TOKEN = os.environ["CHANNEL_ACCESS_TOKEN"]
+    CHANNEL_SECRET = os.environ["CHANNEL_SECRET"]
     django_heroku.settings(locals())
