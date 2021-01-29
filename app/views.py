@@ -30,28 +30,29 @@ class CallbackView(View):
         except InvalidSignatureError:
             # 署名検証で失敗した場合は、例外を挙げる
             return HttpResponseBadRequest()
+        except LineBotApiError as e:
             # APIのエラーが発生した場合は、例外を挙げる
             print(e)
-            return HttpResponceServererror()
+            return HttpResponseServerError()
 
         # 処理が成功したらOKを表示させる
         return HttpResponse('OK')
 
         # 外部からのアクセスを可能にする
         # csrf_tokenを渡していないpostメソッドは４０３エラーになるため
-        @method_decorator(csrf_exempt)
-        def dispatch(self, *args, **kwargs):
-            return super(CallbackView, self).dispatch(*args, **kwargs)
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(CallbackView, self).dispatch(*args, **kwargs)
 
-        # staticmethod関数は、インスタンス化せずに呼び出せる関数のこと。
-        # handlerのaddメソッドで、リクエストのイベントごとに実行する関数を記述
-        @staticmethod
-        @handler.add(MessageEvent, message=TextMessage)
-        def message_event(event):
-            # オウム返し
-            reply = event.message.text
+    # staticmethod関数は、インスタンス化せずに呼び出せる関数のこと。
+    # handlerのaddメソッドで、リクエストのイベントごとに実行する関数を記述
+    @staticmethod
+    @handler.add(MessageEvent, message=TextMessage)
+    def message_event(event):
+        # オウム返し
+        reply = event.message.text
 
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=reply)
-            )
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=reply)
+        )
